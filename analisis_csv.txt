@@ -1,0 +1,165 @@
+Archivos encontrados: 10
+
+Archivo: pruebas_especificas_2015.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 20277
+Encabezados: ['fecha_asignacion', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluacion', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_educativa', 'municipio_institucion_educativa', 'tipo_institucion_educativa', 'correlativo_aspirante']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2016.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 22137
+Encabezados: ['fecha_asignacion', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluacion', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_educativa', 'municipio_institucion_educativa', 'tipo_institucion_educativa', 'correlativo_aspirante']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2017.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 21581
+Encabezados: ['fecha_asignacion', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluacion', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_educativa', 'municipio_institucion_educativa', 'tipo_institucion_educativa', 'correlativo_aspirante']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2018.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 20871
+Encabezados: ['fecha_asignacion', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluacion', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_educativa', 'municipio_institucion_educativa', 'tipo_institucion_educativa', 'correlativo_aspirante']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2019.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 17865
+Encabezados: ['fecha_asignacion', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluacion', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_educativa', 'municipio_institucion_educativa', 'tipo_institucion_educativa', 'correlativo_aspirante']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2020.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 17931
+Encabezados: ['fecha_asignacion', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluacion', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_educativa', 'municipio_institucion_educativa', 'tipo_institucion_educativa', 'correlativo_aspirante']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2021.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 30644
+Encabezados: ['fecha_asignacion', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluacion', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_educativa', 'municipio_institucion_educativa', 'tipo_institucion_educativa', 'correlativo_aspirante']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2022.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 24237
+Encabezados: ['fecha_asignacion', 'correlativo_aspirante', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluaci', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_ed', 'municipio_institucion_', 'tipo_institucion_educativa']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2023.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 19047
+Encabezados: ['fecha_asignacion', 'correlativo_aspirante', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluaci', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_ed', 'municipio_institucion_', 'tipo_institucion_educativa']
+------------------------------------------------------------
+Archivo: pruebas_especificas_2024.csv
+Codificación: utf-8-sig
+Delimitador: ','
+Columnas: 12
+Registros: 13863
+Encabezados: ['fecha_asignacion', 'correlativo_aspirante', 'sexo', 'anio_nacimiento', 'materia', 'numero_de_fecha_de_evaluaci', 'anio_de_ingreso', 'aprobacion', 'carrera_objetivo', 'departamento_institucion_ed', 'municipio_institucion_', 'tipo_institucion_educativa']
+------------------------------------------------------------
+
+Analiis de calidad de datos:
+
+
+Archivo: pruebas_especificas_2015.csv
+Sin correlativo: 0
+sexo: [('M', 16400), ('F', 3877)]
+anio_nacimiento: [('SIN REGISTRO', 14192), ('1996', 1627), ('1995', 1238), ('1997', 810), ('1994', 738), ('1993', 437), ('1992', 299), ('1991', 225), ('1990', 170), ('1989', 147)]
+materia: [('MATEMATICA', 13547), ('COMPUTACION', 6730)]
+aprobacion: [('NO APROBADO', 15528), ('APROBADO', 4749)]
+tipo_institucion_educativa: [('PRIVADO', 16939), ('PUBLICO', 3180), ('POR COOPERATIVA', 121), ('SIN DATOS', 24), ('MUNICIPAL', 13)]
+numero_de_fecha_de_evaluacion: [('1', 7000), ('2', 4654), ('3', 4466), ('4', 4157)]
+
+Archivo: pruebas_especificas_2016.csv
+Sin correlativo: 0
+sexo: [('M', 17507), ('F', 4626), ('SIN REGISTRO', 4)]
+anio_nacimiento: [('1997', 5283), ('SIN REGISTRO', 3790), ('1996', 3687), ('1998', 3277), ('1995', 1912), ('1994', 1163), ('1993', 727), ('1992', 567), ('1991', 370), ('1999', 357)]
+materia: [('MATEMATICA', 13742), ('COMPUTACION', 8395)]
+aprobacion: [('NO APROBADO', 19027), ('APROBADO', 3110)]
+tipo_institucion_educativa: [('PRIVADO', 18724), ('PUBLICO', 3201), ('POR COOPERATIVA', 162), ('MUNICIPAL', 28), ('SIN DATOS', 22)]
+numero_de_fecha_de_evaluacion: [('2', 6795), ('3', 5584), ('1', 5196), ('4', 4562)]
+
+Archivo: pruebas_especificas_2017.csv
+Sin correlativo: 0
+sexo: [('M', 17179), ('F', 4389), ('SIN REGISTRO', 13)]
+anio_nacimiento: [('1998', 6052), ('1997', 4208), ('1999', 3680), ('1996', 2490), ('1995', 1366), ('1994', 816), ('1993', 561), ('1992', 414), ('2000', 385), ('SIN REGISTRO', 370)]
+materia: [('MATEMATICA', 13261), ('COMPUTACION', 8320)]
+aprobacion: [('NO APROBADO', 18210), ('APROBADO', 3371)]
+tipo_institucion_educativa: [('PRIVADO', 18061), ('PUBLICO', 3234), ('POR COOPERATIVA', 164), ('SIN DATOS', 105), ('MUNICIPAL', 17)]
+numero_de_fecha_de_evaluacion: [('1', 6988), ('2', 6516), ('3', 4048), ('4', 4029)]
+
+Archivo: pruebas_especificas_2018.csv
+Sin correlativo: 0
+sexo: [('M', 16428), ('F', 4414), ('SIN REGISTRO', 29)]
+anio_nacimiento: [('1999', 6194), ('2000', 3837), ('1998', 3828), ('1997', 2158), ('1996', 1308), ('1995', 701), ('1994', 573), ('1993', 372), ('2001', 366), ('1992', 287)]
+materia: [('MATEMATICA', 13517), ('COMPUTACION', 7354)]
+aprobacion: [('NO APROBADO', 16983), ('APROBADO', 3888)]
+tipo_institucion_educativa: [('PRIVADO', 17447), ('PUBLICO', 3144), ('POR COOPERATIVA', 143), ('SIN DATOS', 126), ('MUNICIPAL', 11)]
+numero_de_fecha_de_evaluacion: [('1', 6735), ('2', 5879), ('3', 4297), ('4', 3960)]
+
+Archivo: pruebas_especificas_2019.csv
+Sin correlativo: 0
+sexo: [('M', 13796), ('F', 4040), ('SIN REGISTRO', 29)]
+anio_nacimiento: [('2000', 5424), ('1999', 3696), ('2001', 3187), ('1998', 1834), ('1997', 942), ('1996', 688), ('1995', 374), ('2002', 290), ('1994', 263), ('SIN REGISTRO', 224)]
+materia: [('MATEMATICA', 11556), ('COMPUTACION', 6309)]
+aprobacion: [('NO APROBADO', 14215), ('APROBADO', 3650)]
+tipo_institucion_educativa: [('PRIVADO', 14917), ('PUBLICO', 2503), ('POR COOPERATIVA', 218), ('SIN DATOS', 210), ('MUNICIPAL', 17)]
+numero_de_fecha_de_evaluacion: [('1', 5112), ('2', 4861), ('3', 4197), ('4', 3695)]
+
+Archivo: pruebas_especificas_2020.csv
+Sin correlativo: 0
+sexo: [('M', 13543), ('F', 4333), ('SIN REGISTRO', 55)]
+anio_nacimiento: [('2001', 5529), ('2000', 3655), ('2002', 3204), ('1999', 2033), ('1998', 898), ('1997', 603), ('1996', 415), ('2003', 266), ('1995', 256), ('SIN REGISTRO', 241)]
+materia: [('MATEMATICA', 11739), ('COMPUTACION', 6192)]
+aprobacion: [('NO APROBADO', 14548), ('APROBADO', 3383)]
+tipo_institucion_educativa: [('PRIVADO', 14996), ('PUBLICO', 2111), ('SIN DATOS', 545), ('POR COOPERATIVA', 255), ('MUNICIPAL', 24)]
+numero_de_fecha_de_evaluacion: [('3', 4728), ('1', 4716), ('2', 4713), ('4', 3774)]
+
+Archivo: pruebas_especificas_2021.csv
+Sin correlativo: 0
+sexo: [('M', 23718), ('F', 6868), ('SIN REGISTRO', 58)]
+anio_nacimiento: [('2002', 9615), ('2001', 6504), ('2003', 5317), ('2000', 3096), ('1999', 1788), ('1998', 896), ('1997', 630), ('1996', 471), ('2004', 447), ('1995', 307)]
+materia: [('MATEMATICA', 16668), ('COMPUTACION', 13959), ('MATEMATICA ITUGS', 17)]
+aprobacion: [('NO APROBADO', 28963), ('APROBADO', 1681)]
+tipo_institucion_educativa: [('PRIVADO', 25238), ('PUBLICO', 3832), ('SIN DATOS', 1131), ('POR COOPERATIVA', 381), ('MUNICIPAL', 62)]
+numero_de_fecha_de_evaluacion: [('1', 8764), ('3', 7724), ('4', 7143), ('2', 7013)]
+
+Archivo: pruebas_especificas_2022.csv
+Sin correlativo: 0
+sexo: [('M', 18151), ('F', 6086)]
+anio_nacimiento: [('2003', 7042), ('2002', 4957), ('2004', 4456), ('2001', 2531), ('2000', 1547), ('1999', 922), ('1998', 531), ('1997', 430), ('1996', 291), ('2005', 271)]
+materia: [('MATEMATICA', 13071), ('COMPUTACION', 11161), ('MATEMATICA ITUGS', 5)]
+aprobacion: [('NO APROBADO', 22576), ('APROBADO', 1661)]
+tipo_institucion_educativa: [('PRIVADO', 19751), ('PUBLICO', 3305), ('SIN DATOS', 786), ('POR COOPERATIVA', 354), ('MUNICIPAL', 41)]
+numero_de_fecha_de_evaluacion: [('2', 6422), ('3', 6301), ('4', 5804), ('1', 5710)]
+
+Archivo: pruebas_especificas_2023.csv
+Sin correlativo: 0
+sexo: [('M', 14635), ('F', 4412)]
+anio_nacimiento: [('2004', 6196), ('2003', 3926), ('2005', 3720), ('2002', 1788), ('2001', 931), ('2000', 504), ('1999', 352), ('2006', 244), ('1998', 241), ('1997', 233)]
+materia: [('MATEMATICA', 9897), ('COMPUTACION', 9150)]
+aprobacion: [('NO APROBADO', 16744), ('APROBADO', 2303)]
+tipo_institucion_educativa: [('PRIVADO', 15485), ('PUBLICO', 2626), ('SIN DATOS', 571), ('POR COOPERATIVA', 324), ('MUNICIPAL', 41)]
+numero_de_fecha_de_evaluacion: [('1', 5199), ('3', 5082), ('2', 4871), ('4', 3025), ('5', 870)]
+
+Archivo: pruebas_especificas_2024.csv
+Sin correlativo: 0
+sexo: [('M', 10604), ('F', 3259)]
+anio_nacimiento: [('2005', 4330), ('2006', 3108), ('2004', 2510), ('2003', 1249), ('2002', 665), ('2001', 439), ('2000', 281), ('1999', 223), ('2007', 192), ('1998', 159)]
+materia: [('MATEMATICA', 7429), ('COMPUTACION', 6434)]
+aprobacion: [('NO APROBADO', 11782), ('APROBADO', 2081)]
+tipo_institucion_educativa: [('PRIVADO', 11232), ('PUBLICO', 1856), ('SIN DATOS', 485), ('POR COOPERATIVA', 259), ('MUNICIPAL', 31)]
+numero_de_fecha_de_evaluacion: [('2', 3664), ('1', 3160), ('3', 3110), ('4', 3015), ('5', 914)]
