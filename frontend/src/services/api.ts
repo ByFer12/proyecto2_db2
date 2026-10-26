@@ -70,3 +70,51 @@ export async function ejecutarConsultaNeo4j(
 
   return respuesta.json();
 }
+
+
+export interface FiltrosBusqueda {
+  correlativo: string;
+  materia: string;
+  carrera: string;
+  sexo: string;
+  institucion: string;
+  municipio: string;
+  departamento: string;
+  anio: string;
+  aprobado: string;
+}
+
+export interface RespuestaBusqueda {
+  total: number;
+  pagina: number;
+  limite: number;
+  total_paginas: number;
+  resultados: Record<string, unknown>[];
+}
+
+export async function buscarEvaluaciones(
+  filtros: FiltrosBusqueda,
+  pagina = 1,
+  limite = 20
+): Promise<RespuestaBusqueda> {
+  const parametros = new URLSearchParams();
+
+  for (const [clave, valor] of Object.entries(filtros)) {
+    if (valor.trim() !== "") {
+      parametros.set(clave, valor.trim());
+    }
+  }
+
+  parametros.set("pagina", String(pagina));
+  parametros.set("limite", String(limite));
+
+  const respuesta = await fetch(
+    `${API_URL}/api/busqueda/evaluaciones?${parametros}`
+  );
+
+  if (!respuesta.ok) {
+    throw new Error(`Error HTTP ${respuesta.status}`);
+  }
+
+  return respuesta.json();
+}

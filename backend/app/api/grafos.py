@@ -9,7 +9,8 @@ from app.services.grafos import (
     aspirantes_por_departamento,
     historial_aspirante_grafo,
     carreras_por_departamento,
-    desempeno_por_intentos
+    desempeno_por_intentos,
+    visualizar_grafo_aspirante
 )
 
 router = APIRouter(
@@ -82,4 +83,25 @@ def obtener_desempeno_intentos():
         raise HTTPException(
             status_code=503,
             detail="Error al consultar intentos en Neo4j"
+        )
+
+
+
+@router.get("/visualizar/{correlativo}")
+def obtener_visualizacion_grafo(correlativo: str):
+    try:
+        resultado = visualizar_grafo_aspirante(correlativo)
+
+        if not resultado["nodes"]:
+            raise HTTPException(
+                status_code=404,
+                detail="Aspirante no encontrado"
+            )
+
+        return resultado
+
+    except (Neo4jError, ServiceUnavailable):
+        raise HTTPException(
+            status_code=503,
+            detail="Error al generar la visualización del grafo"
         )

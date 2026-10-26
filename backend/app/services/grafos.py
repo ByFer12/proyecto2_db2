@@ -157,3 +157,112 @@ def desempeno_por_intentos():
     with driver.session(database=NEO4J_DATABASE) as session:
         resultado = session.run(consulta)
         return [r.data() for r in resultado]
+
+
+
+
+def visualizar_grafo_aspirante(correlativo: str):
+    consulta = """
+    MATCH (a:Aspirante {correlativo: $correlativo})
+          -[:REALIZO]->(e:Evaluacion)
+          -[:EVALUA]->(m:Materia)
+
+    MATCH (e)-[:PARA_CARRERA]->(c:Carrera)
+
+    RETURN
+        a.correlativo AS aspirante,
+        elementId(e) AS evaluacion_id,
+        e.intento AS intento,
+        e.aprobado AS aprobado,
+        toString(e.fecha_asignacion) AS fecha,
+        m.nombre AS materia,
+        c.nombre AS carrera
+    ORDER BY fecha, materia, intento
+    LIMIT 50
+    """
+
+    with driver.session(database=NEO4J_DATABASE) as session:
+        registros = [
+            r.data()
+            for r in session.run(
+                consulta,
+                correlativo=correlativo
+            )
+        ]
+
+    nodos = {}
+    relaciones = []
+
+    if not registros:
+        return {"nodes": [], "edges": []}
+
+    aspirante_id = f"aspirante:{correlativo}"
+
+    nodos[aspirante_id] = {
+        "data": {
+            "id": aspirante_id,
+            "label": f"Aspirante {correlativo}",
+            "tipo": "Aspirante"
+        }
+    }
+
+    for registro in registros:
+        evaluacion_id = f"evaluacion:{registro['evaluacion_id']}"
+        materia_id = f"materia:{registro['materia']}"
+        carrera_id = f"carrera:{registro['carrera']}"
+
+        nodos[evaluacion_id] = {
+            "data": {
+                "id": evaluacion_id,
+                "label": f"Evaluación {registro['intento']}",
+                "tipo": "Evaluacion",
+                "aprobado": registro["aprobado"],
+                "fecha": registro["fecha"],
+                "intento": registro["intento"]
+            }
+        }
+
+        nodos[materia_id] = {
+            "data": {
+                "id": materia_id,
+                "label": registro["materia"],
+                "tipo": "Materia"
+            }
+        }
+
+        nodos[carrera_id] = {
+            "data": {
+                "id": carrera_id,
+                "label": registro["carrera"],
+                "tipo": "Carrera"
+            }
+        }
+
+        relaciones.extend([
+            {
+                "data": {
+                    "source": aspirante_id,
+                    "target": evaluacion_id,
+                    "label": "REALIZO"
+                }
+            },
+            {
+                "data": {
+                    "source": evaluacion_id,
+                    "target": materia_id,
+                    "label": "EVALUA"
+                }
+            },
+            {
+                "data": {
+                    "source": evaluacion_id,
+                    "target": carrera_id,
+                    "label": "PARA_CARRERA"
+                }
+            }
+        ])
+
+    return {
+        "nodes": list(nodos.values()),
+        "edges": relaciones
+    }
