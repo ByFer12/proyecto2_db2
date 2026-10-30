@@ -118,3 +118,71 @@ export async function buscarEvaluaciones(
 
   return respuesta.json();
 }
+
+
+export interface ErrorImportacion {
+  archivo: string;
+  fila: number;
+  motivo: string;
+}
+
+export interface ResultadoMongoImportacion {
+  archivo: string;
+  total: number;
+  validos: number;
+  rechazados: number;
+  duracion_segundos: number;
+  estado: string;
+  errores: ErrorImportacion[];
+}
+
+export interface ResultadoNeo4jImportacion {
+  registros_sincronizados: number;
+  duracion_segundos: number;
+}
+
+export interface ArchivoImportado {
+  archivo_original: string;
+  archivo_guardado?: string;
+  estado: string;
+  mensaje?: string;
+  mongodb?: ResultadoMongoImportacion;
+  neo4j?: ResultadoNeo4jImportacion;
+  duracion_total_segundos: number;
+}
+
+export interface RespuestaImportacion {
+  archivos_recibidos: number;
+  archivos_completados: number;
+  resultados: ArchivoImportado[];
+}
+
+export async function importarArchivosCSV(
+  archivos: File[]
+): Promise<RespuestaImportacion> {
+  const formulario = new FormData();
+
+  archivos.forEach((archivo) => {
+    formulario.append("archivos", archivo);
+  });
+
+  const respuesta = await fetch(
+    `${API_URL}/api/importacion/csv`,
+    {
+      method: "POST",
+      body: formulario,
+    }
+  );
+
+  if (!respuesta.ok) {
+    const detalle = await respuesta.json().catch(() => null);
+
+    throw new Error(
+      typeof detalle?.detail === "string"
+        ? detalle.detail
+        : `Error HTTP ${respuesta.status}`
+    );
+  }
+
+  return respuesta.json();
+}
