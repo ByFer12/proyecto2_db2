@@ -1,4 +1,5 @@
 
+import re
 from app.db.mongodb import db
 
 
@@ -20,25 +21,47 @@ def buscar_evaluaciones(
     filtros = {}
 
     if correlativo:
-        filtros["correlativo_aspirante"] = correlativo.strip()
+        texto_corr = correlativo.strip()
+        if len(texto_corr) == 32:
+            filtros["correlativo_aspirante"] = texto_corr
+        else:
+            filtros["correlativo_aspirante"] = {
+                "$regex": re.escape(texto_corr),
+                "$options": "i"
+            }
 
     if materia:
         filtros["materia"] = materia.strip().upper()
 
     if carrera:
-        filtros["carrera_objetivo"] = carrera.strip().upper()
+        filtros["carrera_objetivo"] = {
+            "$regex": re.escape(carrera.strip()),
+            "$options": "i"
+        }
 
     if sexo:
         filtros["sexo"] = sexo.strip().upper()
 
     if institucion:
-        filtros["tipo_institucion_educativa"] = institucion.strip().upper()
+        inst_limpia = institucion.strip().upper()
+        if inst_limpia in ("COOPERATIVA", "POR COOPERATIVA"):
+            filtros["tipo_institucion_educativa"] = {
+                "$in": ["COOPERATIVA", "POR COOPERATIVA"]
+            }
+        else:
+            filtros["tipo_institucion_educativa"] = inst_limpia
 
     if municipio:
-        filtros["municipio_institucion_educativa"] = municipio.strip().upper()
+        filtros["municipio_institucion_educativa"] = {
+            "$regex": re.escape(municipio.strip()),
+            "$options": "i"
+        }
 
     if departamento:
-        filtros["departamento_institucion_educativa"] = departamento.strip().upper()
+        filtros["departamento_institucion_educativa"] = {
+            "$regex": re.escape(departamento.strip()),
+            "$options": "i"
+        }
 
     if anio is not None:
         filtros["anio_de_ingreso"] = anio

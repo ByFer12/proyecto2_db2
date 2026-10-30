@@ -186,3 +186,77 @@ export async function importarArchivosCSV(
 
   return respuesta.json();
 }
+
+export async function obtenerHistorialCargas(): Promise<
+  ResultadoMongoImportacion[]
+> {
+  const respuesta = await fetch(
+    `${API_URL}/api/importacion/historial`
+  );
+
+  if (!respuesta.ok) {
+    throw new Error(`Error HTTP ${respuesta.status}`);
+  }
+
+  return respuesta.json();
+}
+
+export interface AspiranteSugerido {
+  correlativo: string;
+  total_evaluaciones: number;
+  aprobadas: number;
+  carreras: string[];
+  materias: string[];
+  departamento: string;
+}
+
+export interface OpcionesFiltrosGrafo {
+  materias: string[];
+  carreras: string[];
+  departamentos: string[];
+  anios: number[];
+}
+
+export interface ResumenGrafo {
+  correlativo?: string;
+  total_evaluaciones: number;
+  aprobadas: number;
+  reprobadas: number;
+  tasa_aprobacion: number;
+  materias: string[];
+  carreras: string[];
+}
+
+export async function obtenerAspirantesSugeridos(
+  busqueda = "",
+  limite = 12
+): Promise<AspiranteSugerido[]> {
+  const params = new URLSearchParams({
+    limite: String(limite),
+  });
+  if (busqueda.trim()) {
+    params.set("busqueda", busqueda.trim());
+  }
+
+  const respuesta = await fetch(
+    `${API_URL}/api/grafos/aspirantes-sugeridos?${params}`
+  );
+
+  if (!respuesta.ok) {
+    throw new Error(`Error HTTP ${respuesta.status}`);
+  }
+
+  return respuesta.json();
+}
+
+export async function obtenerOpcionesFiltrosGrafo(): Promise<OpcionesFiltrosGrafo> {
+  const respuesta = await fetch(
+    `${API_URL}/api/grafos/filtros-opciones`
+  );
+
+  if (!respuesta.ok) {
+    throw new Error(`Error HTTP ${respuesta.status}`);
+  }
+
+  return respuesta.json();
+}

@@ -289,9 +289,30 @@ def generar_resumen_carrera():
     # Ejecutar la agregación y consumir el cursor.
     list(db["evaluaciones"].aggregate(pipeline))
 
+    resumen = list(
+        db["resumen_carrera"].aggregate([
+            {
+                "$project": {
+                    "_id": 0,
+                    "carrera": "$_id",
+                    "total_aspirantes": 1,
+                    "total_evaluaciones": 1,
+                    "evaluaciones_aprobadas": 1,
+                    "porcentaje_aprobacion": 1
+                }
+            },
+            {
+                "$sort": {
+                    "total_aspirantes": -1
+                }
+            }
+        ])
+    )
+
     return {
         "mensaje": "Resumen por carrera generado",
-        "total_carreras": db["resumen_carrera"].count_documents({})
+        "total_carreras": len(resumen),
+        "resultados": resumen
     }
 
 

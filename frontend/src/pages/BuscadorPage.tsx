@@ -202,7 +202,7 @@ export default function BuscadorPage() {
               <option value="">Todas</option>
               <option value="PRIVADO">Privado</option>
               <option value="PUBLICO">Público</option>
-              <option value="COOPERATIVA">Cooperativa</option>
+              <option value="POR COOPERATIVA">Por cooperativa</option>
               <option value="MUNICIPAL">Municipal</option>
               <option value="SIN DATOS">Sin datos</option>
             </select>

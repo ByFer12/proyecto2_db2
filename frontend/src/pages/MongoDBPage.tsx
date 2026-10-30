@@ -56,6 +56,13 @@ export default function MongoDBPage() {
         Array.isArray(datos.evaluaciones)
       ) {
         setResultados(datos.evaluaciones as Resultado[]);
+      } else if (
+        datos !== null &&
+        typeof datos === "object" &&
+        "resultados" in datos &&
+        Array.isArray(datos.resultados)
+      ) {
+        setResultados(datos.resultados as Resultado[]);
       } else {
         setResultados([datos as Resultado]);
       }

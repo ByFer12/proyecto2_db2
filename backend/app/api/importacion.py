@@ -4,7 +4,9 @@ import time
 from pathlib import Path
 
 from fastapi import APIRouter, File, UploadFile, HTTPException
+from pymongo.errors import PyMongoError
 
+from app.db.mongodb import db
 from app.etl.load_mongodb import cargar_csv, DATA_DIR
 from app.etl.load_neo4j import sincronizar_archivo
 
@@ -14,7 +16,7 @@ router = APIRouter(
     tags=["Importación CSV"]
 )
 
-MAX_ARCHIVOS = 5
+MAX_ARCHIVOS = 15
 MAX_BYTES = 20 * 1024 * 1024
 
 
@@ -126,3 +128,20 @@ async def importar_csv(
         ),
         "resultados": resultados
     }
+
+
+@router.get("/historial")
+def obtener_historial_cargas():
+    try:
+        registros = list(
+            db["historial_cargas"]
+            .find({}, {"_id": 0})
+            .sort("_id", -1)
+            .limit(20)
+        )
+        return registros
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="Error al consultar el historial de cargas"
+        )
