@@ -99,7 +99,9 @@ def cargar_csv(nombre_archivo):
     guardar_lote()
 
     if errores:
-        db["errores_carga"].insert_many(errores)
+        db["errores_carga"].insert_many(
+            [error.copy() for error in errores]
+        )
 
     duracion = round(
         time.perf_counter() - inicio, 2
@@ -111,7 +113,8 @@ def cargar_csv(nombre_archivo):
         "validos": validos,
         "rechazados": rechazados,
         "duracion_segundos": duracion,
-        "estado": "completado"
+        "estado": "completado",
+        "errores": errores[:20]
     }
 
     db["historial_cargas"].insert_one(

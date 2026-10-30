@@ -9,6 +9,7 @@ from pymongo.errors import PyMongoError
 from neo4j.exceptions import Neo4jError, ServiceUnavailable, AuthError
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.busqueda import router as busqueda_router
+from app.api.importacion import router as importacion_router
 
 
 app = FastAPI(
@@ -77,3 +78,4 @@ def estado_neo4j():
 app.include_router(estadisticas_router)
 app.include_router(grafos_router)
 app.include_router(busqueda_router)
+app.include_router(importacion_router)

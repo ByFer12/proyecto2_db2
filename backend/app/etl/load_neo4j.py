@@ -180,6 +180,56 @@ def importar_todo():
     print("Importación terminada correctamente.")
 
 
+
+def sincronizar_archivo(nombre_archivo: str):
+    coleccion = db["evaluaciones"]
+
+    cursor = coleccion.find({
+        "archivo_origen": nombre_archivo
+    }).batch_size(BATCH_SIZE)
+
+    procesados = 0
+    lote = []
+
+    inicio = time.perf_counter()
+
+    try:
+        with driver.session(
+            database=NEO4J_DATABASE
+        ) as session:
+
+            for documento in cursor:
+                lote.append(preparar_registro(documento))
+
+                if len(lote) >= BATCH_SIZE:
+                    session.execute_write(
+                        insertar_lote,
+                        lote
+                    )
+
+                    procesados += len(lote)
+                    lote.clear()
+
+            if lote:
+                session.execute_write(
+                    insertar_lote,
+                    lote
+                )
+
+                procesados += len(lote)
+
+    finally:
+        cursor.close()
+
+    return {
+        "registros_sincronizados": procesados,
+        "duracion_segundos": round(
+            time.perf_counter() - inicio, 2
+        )
+    }
+
+
+
 if __name__ == "__main__":
     try:
         importar_todo()
