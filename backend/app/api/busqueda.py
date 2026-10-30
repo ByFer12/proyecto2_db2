@@ -2,13 +2,27 @@
 from fastapi import APIRouter, Query, HTTPException
 from pymongo.errors import PyMongoError
 
-from app.services.busqueda import buscar_evaluaciones
+from app.services.busqueda import (
+    buscar_evaluaciones,
+    obtener_opciones_busqueda,
+)
 
 
 router = APIRouter(
     prefix="/api/busqueda",
     tags=["Buscador de evaluaciones"]
 )
+
+
+@router.get("/opciones")
+def listar_opciones_busqueda():
+    try:
+        return obtener_opciones_busqueda()
+    except PyMongoError:
+        raise HTTPException(
+            status_code=503,
+            detail="Error al consultar opciones en MongoDB"
+        )
 
 
 @router.get("/evaluaciones")

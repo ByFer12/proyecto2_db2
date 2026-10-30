@@ -82,11 +82,25 @@ async def importar_csv(
                     "El archivo supera el límite de 20 MB"
                 )
 
-            if not contenido:
+            if not contenido or not contenido.strip():
                 raise ValueError("El archivo está vacío")
 
-            # Validación de codificación antes de procesar.
-            contenido.decode("utf-8-sig")
+            if b"\x00" in contenido:
+                raise ValueError(
+                    "El archivo contiene bytes binarios inválidos y no es un CSV de texto"
+                )
+
+            # Validación y normalización de codificación (soporta UTF-8 y Latin-1/Windows-1252).
+            try:
+                contenido.decode("utf-8-sig")
+            except UnicodeDecodeError:
+                try:
+                    texto_latin = contenido.decode("latin-1")
+                    contenido = texto_latin.encode("utf-8")
+                except UnicodeDecodeError:
+                    raise ValueError(
+                        "Codificación de texto no soportada (use UTF-8)"
+                    )
 
             nombre_guardado = guardar_csv(contenido)
 

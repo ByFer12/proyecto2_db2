@@ -1,5 +1,5 @@
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   Search,
   RotateCcw,
@@ -14,6 +14,52 @@ import {
 } from "../services/api";
 
 import ResultsTable from "../components/common/ResultsTable";
+
+const CARRERAS_INICIALES = [
+  "INGENIERIA AMBIENTAL",
+  "INGENIERIA CIVIL",
+  "INGENIERIA ELECTRICA",
+  "INGENIERIA ELECTRONICA",
+  "INGENIERIA EN CIENCIAS Y SISTEMAS",
+  "INGENIERIA EN CIENCIAS Y",
+  "INGENIERIA EN SISTEMAS",
+  "INGENIERIA INDUSTRIAL",
+  "INGENIERIA MECANICA",
+  "INGENIERIA MECANICA ELECTRICA",
+  "INGENIERIA MECANICA INDUSTRIAL",
+  "INGENIERIA QUIMICA",
+  "ITUGS",
+  "LICENCIATURA EN FISICA APLICADA",
+  "LICENCIATURA EN MATEMATICA APLICADA",
+  "NINGUNO",
+];
+
+const DEPARTAMENTOS_INICIALES = [
+  "ALTA VERAPAZ",
+  "BAJA VERAPAZ",
+  "CHIMALTENANGO",
+  "CHIQUIMULA",
+  "EL PROGRESO",
+  "ESCUINTLA",
+  "EXTRANJERO",
+  "GUATEMALA",
+  "HUEHUETENANGO",
+  "IZABAL",
+  "JALAPA",
+  "JUTIAPA",
+  "PETEN",
+  "QUEZALTENANGO",
+  "QUICHE",
+  "RETALHULEU",
+  "SACATEPEQUEZ",
+  "SAN MARCOS",
+  "SANTA ROSA",
+  "SIN DATOS",
+  "SOLOLA",
+  "SUCHITEPEQUEZ",
+  "TOTONICAPAN",
+  "ZACAPA",
+];
 
 const filtrosIniciales: FiltrosBusqueda = {
   correlativo: "",
@@ -37,6 +83,23 @@ export default function BuscadorPage() {
   const [datos, setDatos] = useState<RespuestaBusqueda | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
+  const [carrerasOpciones, setCarrerasOpciones] = useState<string[]>(
+    CARRERAS_INICIALES
+  );
+  const [departamentosOpciones, setDepartamentosOpciones] = useState<
+    string[]
+  >(DEPARTAMENTOS_INICIALES);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/busqueda/opciones")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((opc) => {
+        if (opc?.carreras?.length) setCarrerasOpciones(opc.carreras);
+        if (opc?.departamentos?.length)
+          setDepartamentosOpciones(opc.departamentos);
+      })
+      .catch(() => {});
+  }, []);
 
   function actualizar(campo: keyof FiltrosBusqueda, valor: string) {
     setFiltros((anterior) => ({
@@ -150,28 +213,40 @@ export default function BuscadorPage() {
             <label className="block text-sm mb-2">
               Carrera objetivo
             </label>
-            <input
+            <select
               className={claseInput}
               value={filtros.carrera}
               onChange={(e) =>
                 actualizar("carrera", e.target.value)
               }
-              placeholder="Ej. INGENIERIA INDUSTRIAL"
-            />
+            >
+              <option value="">Todas las carreras</option>
+              {carrerasOpciones.map((carrera) => (
+                <option key={carrera} value={carrera}>
+                  {carrera}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
             <label className="block text-sm mb-2">
               Departamento
             </label>
-            <input
+            <select
               className={claseInput}
               value={filtros.departamento}
               onChange={(e) =>
                 actualizar("departamento", e.target.value)
               }
-              placeholder="Ej. GUATEMALA"
-            />
+            >
+              <option value="">Todos los departamentos</option>
+              {departamentosOpciones.map((depto) => (
+                <option key={depto} value={depto}>
+                  {depto}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

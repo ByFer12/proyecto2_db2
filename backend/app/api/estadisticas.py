@@ -1,5 +1,6 @@
 
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from pymongo.errors import PyMongoError
 
 from app.services.estadisticas import (
@@ -23,8 +24,15 @@ from app.services.estadisticas import (
     tasa_aprobacion_institucion,
     carreras_demandadas_departamento,
     evolucion_aprobacion_anual,
-    
+    ejecutar_consulta_mongo_personalizada,
 )
+
+
+class SolicitudConsultaMongo(BaseModel):
+    coleccion: str = "evaluaciones"
+    modo: str = "aggregate"
+    consulta: list | dict
+    limite: int = 100
 
 router = APIRouter(
     prefix="/api/estadisticas",
@@ -276,4 +284,25 @@ def obtener_evolucion_aprobacion_anual():
         raise HTTPException(
             status_code=503,
             detail="Error al consultar evolución anual"
+        )
+
+
+@router.post("/consulta-personalizada")
+def post_consulta_personalizada(payload: SolicitudConsultaMongo):
+    try:
+        return ejecutar_consulta_mongo_personalizada(
+            coleccion_nombre=payload.coleccion,
+            modo=payload.modo,
+            consulta=payload.consulta,
+            limite=payload.limite,
+        )
+    except ValueError as err:
+        raise HTTPException(
+            status_code=400,
+            detail=str(err)
+        )
+    except PyMongoError as err:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error en consulta MongoDB: {err}"
         )

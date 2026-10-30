@@ -186,15 +186,27 @@ export default function ImportarCSVPage() {
           nombre: archivoActual.name,
         });
 
-        const resIndividual = await importarArchivosCSV([
-          archivoActual,
-        ]);
+        try {
+          const resIndividual = await importarArchivosCSV([
+            archivoActual,
+          ]);
 
-        for (const item of resIndividual.resultados) {
-          resultadosAcumulados.push(item);
-          if (item.estado === "completado") {
-            completados += 1;
+          for (const item of resIndividual.resultados) {
+            resultadosAcumulados.push(item);
+            if (item.estado === "completado") {
+              completados += 1;
+            }
           }
+        } catch (errArchivo) {
+          resultadosAcumulados.push({
+            archivo_original: archivoActual.name,
+            estado: "error",
+            mensaje:
+              errArchivo instanceof Error
+                ? errArchivo.message
+                : "Error inesperado al procesar este archivo.",
+            duracion_total_segundos: 0,
+          });
         }
 
         // Actualizar vista parcial en tiempo real

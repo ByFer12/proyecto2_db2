@@ -638,3 +638,60 @@ def explorar_grafo_general(
             "carreras": sorted(carreras_set),
         },
     }
+
+
+import re as _re
+
+PALABRAS_CYPHER_PROHIBIDAS = _re.compile(
+    r"\b(DELETE|DETACH|CREATE|MERGE|SET|REMOVE|DROP|CALL\s+dbms|LOAD\s+CSV)\b",
+    _re.IGNORECASE,
+)
+
+
+def _serializar_cypher(valor):
+    if isinstance(valor, dict):
+        return {str(k): _serializar_cypher(v) for k, v in valor.items()}
+    if isinstance(valor, list):
+        return [_serializar_cypher(x) for x in valor]
+    if hasattr(valor, "items") and hasattr(valor, "labels"):
+        # Nodo de Neo4j
+        datos_nodo = {str(k): _serializar_cypher(v) for k, v in dict(valor).items()}
+        datos_nodo["_etiquetas"] = list(valor.labels)
+        return datos_nodo
+    if hasattr(valor, "items") and hasattr(valor, "type"):
+        # Relación de Neo4j
+        datos_rel = {str(k): _serializar_cypher(v) for k, v in dict(valor).items()}
+        datos_rel["_tipo_relacion"] = valor.type
+        return datos_rel
+    if isinstance(valor, (int, float, bool, str)) or valor is None:
+        return valor
+    return str(valor)
+
+
+def ejecutar_consulta_cypher_personalizada(
+    cypher: str,
+    parametros: dict | None = None,
+    limite: int = 100,
+):
+    texto = (cypher or "").strip()
+    if not texto:
+        raise ValueError("La consulta Cypher no puede estar vacía")
+
+    coincidencia = PALABRAS_CYPHER_PROHIBIDAS.search(texto)
+    if coincidencia:
+        raise ValueError(
+            f"Solo se permiten consultas de lectura (operación '{coincidencia.group(0)}' bloqueada por seguridad)"
+        )
+
+    if "RETURN" not in texto.upper():
+        raise ValueError("La consulta Cypher debe incluir una cláusula RETURN")
+
+    with driver.session(database=NEO4J_DATABASE) as session:
+        resultado = session.run(texto, **(parametros or {}))
+        filas = []
+        for idx, record in enumerate(resultado):
+            if idx >= max(1, min(limite, 300)):
+                break
+            fila_raw = record.data()
+            filas.append(_serializar_cypher(fila_raw))
+        return filas

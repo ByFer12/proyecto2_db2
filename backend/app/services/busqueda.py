@@ -34,10 +34,24 @@ def buscar_evaluaciones(
         filtros["materia"] = materia.strip().upper()
 
     if carrera:
-        filtros["carrera_objetivo"] = {
-            "$regex": re.escape(carrera.strip()),
-            "$options": "i"
-        }
+        carrera_limpia = carrera.strip().upper()
+        if carrera_limpia in (
+            "INGENIERIA EN CIENCIAS Y SISTEMAS",
+            "INGENIERIA EN CIENCIAS Y",
+            "INGENIERIA EN SISTEMAS",
+        ):
+            filtros["carrera_objetivo"] = {
+                "$in": [
+                    "INGENIERIA EN CIENCIAS Y SISTEMAS",
+                    "INGENIERIA EN CIENCIAS Y",
+                    "INGENIERIA EN SISTEMAS",
+                ]
+            }
+        else:
+            filtros["carrera_objetivo"] = {
+                "$regex": re.escape(carrera.strip()),
+                "$options": "i"
+            }
 
     if sexo:
         filtros["sexo"] = sexo.strip().upper()
@@ -88,4 +102,80 @@ def buscar_evaluaciones(
         "limite": limite,
         "total_paginas": (total + limite - 1) // limite,
         "resultados": resultados
+    }
+
+
+CARRERAS_BASE = [
+    "INGENIERIA AMBIENTAL",
+    "INGENIERIA CIVIL",
+    "INGENIERIA ELECTRICA",
+    "INGENIERIA ELECTRONICA",
+    "INGENIERIA EN CIENCIAS Y SISTEMAS",
+    "INGENIERIA EN CIENCIAS Y",
+    "INGENIERIA EN SISTEMAS",
+    "INGENIERIA INDUSTRIAL",
+    "INGENIERIA MECANICA",
+    "INGENIERIA MECANICA ELECTRICA",
+    "INGENIERIA MECANICA INDUSTRIAL",
+    "INGENIERIA QUIMICA",
+    "ITUGS",
+    "LICENCIATURA EN FISICA APLICADA",
+    "LICENCIATURA EN MATEMATICA APLICADA",
+    "NINGUNO",
+]
+
+DEPARTAMENTOS_BASE = [
+    "ALTA VERAPAZ",
+    "BAJA VERAPAZ",
+    "CHIMALTENANGO",
+    "CHIQUIMULA",
+    "EL PROGRESO",
+    "ESCUINTLA",
+    "EXTRANJERO",
+    "GUATEMALA",
+    "HUEHUETENANGO",
+    "IZABAL",
+    "JALAPA",
+    "JUTIAPA",
+    "PETEN",
+    "QUEZALTENANGO",
+    "QUICHE",
+    "RETALHULEU",
+    "SACATEPEQUEZ",
+    "SAN MARCOS",
+    "SANTA ROSA",
+    "SIN DATOS",
+    "SOLOLA",
+    "SUCHITEPEQUEZ",
+    "TOTONICAPAN",
+    "ZACAPA",
+]
+
+
+def obtener_opciones_busqueda():
+    coleccion = db["evaluaciones"]
+    carreras_db = [
+        c for c in coleccion.distinct("carrera_objetivo")
+        if isinstance(c, str) and c.strip()
+    ]
+    deptos_db = [
+        d for d in coleccion.distinct("departamento_institucion_educativa")
+        if isinstance(d, str) and d.strip()
+    ]
+    materias_db = [
+        m for m in coleccion.distinct("materia")
+        if isinstance(m, str) and m.strip()
+    ]
+
+    carreras = sorted(set(CARRERAS_BASE) | set(carreras_db))
+    departamentos = sorted(set(DEPARTAMENTOS_BASE) | set(deptos_db))
+    materias = sorted(
+        {"MATEMATICA", "COMPUTACION", "MATEMATICA ITUGS"}
+        | set(materias_db)
+    )
+
+    return {
+        "carreras": carreras,
+        "departamentos": departamentos,
+        "materias": materias,
     }

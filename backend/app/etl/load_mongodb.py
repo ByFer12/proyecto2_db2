@@ -9,13 +9,21 @@ from pymongo import UpdateOne
 from pymongo.errors import PyMongoError
 
 from app.db.mongodb import db, client
-from app.etl.transform import transformar_registro
+from app.etl.transform import transformar_registro, EQUIVALENCIAS
 
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 DATA_DIR = BASE_DIR / "data" / "raw"
 
 BATCH_SIZE = 500
+COLUMNAS_REQUERIDAS = {
+    "correlativo_aspirante",
+    "fecha_asignacion",
+    "materia",
+    "aprobacion",
+    "anio_de_ingreso",
+    "numero_de_fecha_de_evaluacion",
+}
 
 
 def cargar_csv(nombre_archivo):
@@ -53,14 +61,56 @@ def cargar_csv(nombre_archivo):
     with ruta.open(
         "r",
         encoding="utf-8-sig",
+        errors="replace",
         newline=""
     ) as archivo:
+        primera_linea = archivo.readline()
+        if not primera_linea or not primera_linea.strip():
+            raise ValueError("El archivo CSV no contiene encabezados válidos")
 
-        lector = csv.DictReader(archivo)
+        delimitador = (
+            ";"
+            if primera_linea.count(";") > primera_linea.count(",")
+            else ","
+        )
+        archivo.seek(0)
 
-        for numero_fila, fila in enumerate(
-            lector, start=2
-        ):
+        lector = csv.DictReader(archivo, delimiter=delimitador)
+
+        if not lector.fieldnames:
+            raise ValueError("No se pudieron detectar las columnas del archivo CSV")
+
+        encabezados_normalizados = {
+            EQUIVALENCIAS.get(c.strip().lower(), c.strip().lower())
+            for c in lector.fieldnames
+            if isinstance(c, str) and c.strip()
+        }
+
+        faltantes = COLUMNAS_REQUERIDAS - encabezados_normalizados
+        if faltantes:
+            raise ValueError(
+                "Estructura de columnas inválida. Faltan columnas requeridas: "
+                + ", ".join(sorted(faltantes))
+            )
+
+        numero_fila = 1
+        while True:
+            try:
+                fila = next(lector)
+            except StopIteration:
+                break
+            except csv.Error as err_csv:
+                numero_fila += 1
+                total += 1
+                rechazados += 1
+                errores.append({
+                    "archivo": nombre_archivo,
+                    "fila": numero_fila,
+                    "motivo": f"Formato CSV malformado en la fila: {err_csv}"
+                })
+                continue
+
+            numero_fila += 1
             total += 1
 
             try:
@@ -88,7 +138,7 @@ def cargar_csv(nombre_archivo):
                 if len(operaciones) >= BATCH_SIZE:
                     guardar_lote()
 
-            except (ValueError, TypeError) as error:
+            except (ValueError, TypeError, AttributeError, KeyError) as error:
                 rechazados += 1
                 errores.append({
                     "archivo": nombre_archivo,
@@ -96,11 +146,14 @@ def cargar_csv(nombre_archivo):
                     "motivo": str(error)
                 })
 
+    if total == 0:
+        raise ValueError("El archivo CSV solo tiene encabezados y no contiene registros")
+
     guardar_lote()
 
     if errores:
         db["errores_carga"].insert_many(
-            [error.copy() for error in errores]
+            [error.copy() for error in errores[:1000]]
         )
 
     duracion = round(

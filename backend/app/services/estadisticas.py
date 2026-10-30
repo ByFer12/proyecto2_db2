@@ -1104,3 +1104,89 @@ def evolucion_aprobacion_anual():
     ]
 
     return list(db["evaluaciones"].aggregate(pipeline))
+
+
+ETAPAS_BLOQUEADAS = {"$out", "$merge", "$Drop", "$currentOp", "$listSessions"}
+COLECCIONES_PERMITIDAS = {
+    "evaluaciones",
+    "resumen_carrera",
+    "historial_cargas",
+    "errores_carga",
+}
+
+
+def _serializar_valor(valor):
+    if isinstance(valor, dict):
+        return {str(k): _serializar_valor(v) for k, v in valor.items()}
+    if isinstance(valor, list):
+        return [_serializar_valor(x) for x in valor]
+    if hasattr(valor, "isoformat"):
+        return valor.isoformat()[:19].replace("T", " ")
+    if isinstance(valor, (int, float, bool, str)) or valor is None:
+        return valor
+    return str(valor)
+
+
+def ejecutar_consulta_mongo_personalizada(
+    coleccion_nombre: str,
+    modo: str,
+    consulta: list | dict,
+    limite: int = 100,
+):
+    if coleccion_nombre not in COLECCIONES_PERMITIDAS:
+        raise ValueError(
+            f"Colección no permitida. Usa una de: {', '.join(sorted(COLECCIONES_PERMITIDAS))}"
+        )
+
+    coleccion = db[coleccion_nombre]
+    limite_seguro = max(1, min(limite, 300))
+
+    if modo == "aggregate":
+        if not isinstance(consulta, list):
+            raise ValueError(
+                "Para el modo 'aggregate', la consulta debe ser un arreglo JSON de etapas: [ { ... } ]"
+            )
+        if len(consulta) == 0:
+            raise ValueError("El pipeline de agregación no puede estar vacío")
+
+        pipeline_seguro = []
+        tiene_limit = False
+
+        for etapa in consulta:
+            if not isinstance(etapa, dict) or not etapa:
+                raise ValueError("Cada etapa del pipeline debe ser un objeto JSON válido")
+            for clave in etapa.keys():
+                if clave in ETAPAS_BLOQUEADAS:
+                    raise ValueError(
+                        f"La etapa '{clave}' no está permitida en la consola interactiva"
+                    )
+                if clave == "$limit":
+                    tiene_limit = True
+            pipeline_seguro.append(etapa)
+
+        if not tiene_limit:
+            pipeline_seguro.append({"$limit": limite_seguro})
+
+        cursor = coleccion.aggregate(pipeline_seguro)
+        documentos = []
+        for doc in cursor:
+            serializado = _serializar_valor(doc)
+            if isinstance(serializado, dict) and "_id" in serializado and isinstance(serializado["_id"], dict):
+                # Aplanar _id compuesto para facilitar lectura en tabla y gráficas
+                for sub_k, sub_v in serializado["_id"].items():
+                    if sub_k not in serializado:
+                        serializado[sub_k] = sub_v
+                del serializado["_id"]
+            documentos.append(serializado)
+        return documentos
+
+    elif modo == "find":
+        if not isinstance(consulta, dict):
+            raise ValueError(
+                "Para el modo 'find', el filtro debe ser un objeto JSON: { ... }"
+            )
+        cursor = coleccion.find(consulta, {"_id": 0}).limit(limite_seguro)
+        return [_serializar_valor(doc) for doc in cursor]
+
+    else:
+        raise ValueError("Modo inválido. Usa 'aggregate' o 'find'")

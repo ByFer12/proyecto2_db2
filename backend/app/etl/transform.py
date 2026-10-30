@@ -12,13 +12,21 @@ EQUIVALENCIAS = {
 
 
 def transformar_registro(fila):
-    # Normalizar los encabezados
-    datos = {
-        EQUIVALENCIAS.get(k.strip(), k.strip()):
-            v.strip() if isinstance(v, str) else v
-        for k, v in fila.items()
-        if isinstance(k, str)
-    }
+    if not isinstance(fila, dict):
+        raise ValueError("El registro leído no tiene formato de fila válido")
+
+    # Normalizar los encabezados y asegurar cadenas limpias (incluso si faltan columnas en la fila)
+    datos = {}
+    for k, v in fila.items():
+        if not isinstance(k, str):
+            continue
+        clave = EQUIVALENCIAS.get(k.strip().lower(), k.strip().lower())
+        if v is None:
+            datos[clave] = ""
+        elif isinstance(v, str):
+            datos[clave] = v.strip()
+        else:
+            datos[clave] = str(v).strip()
 
     # Validar campos indispensables
     obligatorios = [
@@ -36,9 +44,18 @@ def transformar_registro(fila):
 
     # Convertir los tipos de datos
     try:
-        fecha = datetime.strptime(
-            datos["fecha_asignacion"], "%Y-%m-%d"
-        )
+        texto_fecha = datos["fecha_asignacion"]
+        fecha = None
+        for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"):
+            try:
+                fecha = datetime.strptime(texto_fecha, fmt)
+                break
+            except ValueError:
+                continue
+        if fecha is None:
+            raise ValueError(
+                f"Fecha inválida '{texto_fecha}' (esperado YYYY-MM-DD)"
+            )
 
         anio_ingreso = int(datos["anio_de_ingreso"])
 
@@ -46,7 +63,7 @@ def transformar_registro(fila):
             datos["numero_de_fecha_de_evaluacion"]
         )
 
-        nacimiento = datos.get("anio_nacimiento", "")
+        nacimiento = datos.get("anio_nacimiento") or ""
 
         anio_nacimiento = (
             int(nacimiento)
@@ -54,7 +71,7 @@ def transformar_registro(fila):
             else None
         )
 
-    except (ValueError, TypeError) as error:
+    except (ValueError, TypeError, AttributeError) as error:
         raise ValueError(
             f"Error en conversión de datos: {error}"
         )

@@ -1,5 +1,6 @@
 
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 from neo4j.exceptions import Neo4jError, ServiceUnavailable
 
 from app.services.grafos import (
@@ -12,7 +13,14 @@ from app.services.grafos import (
     obtener_aspirantes_sugeridos,
     obtener_opciones_filtros_grafo,
     explorar_grafo_general,
+    ejecutar_consulta_cypher_personalizada,
 )
+
+
+class SolicitudConsultaCypher(BaseModel):
+    cypher: str
+    parametros: dict | None = None
+    limite: int = 100
 
 router = APIRouter(
     prefix="/api/grafos",
@@ -172,4 +180,24 @@ def obtener_visualizacion_grafo(
         raise HTTPException(
             status_code=503,
             detail="Error al generar la visualización del grafo"
+        )
+
+
+@router.post("/consulta-personalizada")
+def post_consulta_cypher_personalizada(payload: SolicitudConsultaCypher):
+    try:
+        return ejecutar_consulta_cypher_personalizada(
+            cypher=payload.cypher,
+            parametros=payload.parametros,
+            limite=payload.limite,
+        )
+    except ValueError as err:
+        raise HTTPException(
+            status_code=400,
+            detail=str(err)
+        )
+    except (Neo4jError, ServiceUnavailable) as err:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error en consulta Cypher: {err}"
         )
